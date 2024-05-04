@@ -9,7 +9,7 @@ const bootcamps = require("./routes/bootcamps");
 dotenv.config({ path: "./config/config.env" });
 
 //Connect to Database
-connectToDb();
+connectToDb(process.env.MONGO_URI);
 
 const app = express();
 

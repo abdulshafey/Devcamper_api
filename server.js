@@ -26,13 +26,26 @@ app.use("/api/v1/bootcamps", bootcamps);
 
 //Error middleware
 app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
+  let statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";
 
+  // console.log(err);
+  //Mongoose bed object id
   if (err.name === "CastError") {
     message = `Bootcamp not found with id of ${err.value}`;
   }
 
+  //Mongoose duplicate key
+  if (err.code === 11000) {
+    message = "Duplicate field value entered";
+    statusCode = 400;
+  }
+
+  // Mongoose ValidatorError
+  if (err.name === "ValidatorError") {
+    const errors = Object.values(err.errors).map((error) => error.message);
+    message = errors.join(", ");
+  }
   return res.status(statusCode).json({
     success: false,
     statusCode,

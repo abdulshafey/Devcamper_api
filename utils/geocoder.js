@@ -1,4 +1,4 @@
-const nodeGeocoder = require("node-geocoder");
+const NodeGeocoder = require("node-geocoder");
 
 const options = {
   provider: "mapquest",
@@ -7,5 +7,5 @@ const options = {
   formatter: null,
 };
 
-const geocoder = nodeGeocoder(options);
+const geocoder = NodeGeocoder(options);
 module.exports = geocoder;

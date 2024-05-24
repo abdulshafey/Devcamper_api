@@ -116,7 +116,7 @@ exports.createBootcamp = async (req, res, next) => {
   }
 };
 
-// @dec Update  bootcamp
+// @dec Update bootcamp
 // @route PUT /api/v1/bootcamps/:id
 // @access Private
 exports.updateBootcamp = async (req, res, next) => {

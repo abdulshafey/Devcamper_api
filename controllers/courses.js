@@ -95,3 +95,22 @@ exports.updateCourse = async (req, res, next) => {
     next(error);
   }
 };
+
+// @dec Delete course
+// @route DELETE /api/v1/courses/:id
+// @access Private
+exports.deleteCourse = async (req, res, next) => {
+  try {
+    //remove function ka issue solve karne ke baad Course.FindById use karenge
+    const course = await Course.findByIdAndDelete(req.params.id);
+    if (!course) {
+      return next(
+        errorHandler(404, `Course not found with id of ${req.params.id}`)
+      );
+    }
+    //course.remove(); middleware me issue hai
+    res.status(200).json({ success: true, msg: "Deleted successfully..." });
+  } catch (error) {
+    next(error);
+  }
+};

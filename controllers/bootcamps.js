@@ -28,7 +28,7 @@ exports.getBootcamps = async (req, res, next) => {
     );
 
     // Finding resource
-    query = Bootcamp.find(JSON.parse(queryStr));
+    query = Bootcamp.find(JSON.parse(queryStr)).populate("courses");
 
     // Select Fields
     if (req.query.select) {
@@ -116,7 +116,7 @@ exports.createBootcamp = async (req, res, next) => {
   }
 };
 
-// @dec Create new  bootcamp
+// @dec Update  bootcamp
 // @route PUT /api/v1/bootcamps/:id
 // @access Private
 exports.updateBootcamp = async (req, res, next) => {
@@ -141,12 +141,14 @@ exports.updateBootcamp = async (req, res, next) => {
 // @access Private
 exports.deleteBootcamp = async (req, res, next) => {
   try {
+    //remove function ka issue solve karne ke baad Bootcamp.FindById use karenge
     const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
     if (!bootcamp) {
       return next(
         errorHandler(404, `Bootcamp not found with id of ${req.params.id}`)
       );
     }
+    //bootcamp.remove(); middleware me issue hai
     res.status(200).json({ success: true, msg: "Deleted successfully..." });
   } catch (error) {
     next(error);

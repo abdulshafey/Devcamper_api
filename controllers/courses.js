@@ -1,4 +1,3 @@
-const errorHandler = require("../utils/error");
 const Course = require("../models/Course");
 
 // @dec Get courses
@@ -11,7 +10,10 @@ exports.getCourses = async (req, res, next) => {
     if (req.params.bootcampId) {
       query = Course.find({ bootcamp: req.params.bootcampId });
     } else {
-      query = Course.find();
+      query = Course.find().populate({
+        path: "bootcamp",
+        select: "name description",
+      });
     }
     const courses = await query;
     res.status(200).json({

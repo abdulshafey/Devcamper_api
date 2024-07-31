@@ -1,8 +1,8 @@
 pipeline {
     agent any
-    environment{
-        NEW_VERSION = '1.2.0'
-        SERVER_CREDENTIALS = credentials('github-credentials-1')
+    parameters {
+        choice(name: "VERSION", choices: ['1.1.0', '1.2.1', '1.3.0'], description: '')
+        booleanParam('executeTest', defaultValue: true, description: '')
     }
 
     stages {
@@ -13,6 +13,11 @@ pipeline {
             }
         }
         stage('test'){
+            when {
+                expression {
+                    params.executeTest
+                }
+            }
             steps {
                  echo 'Testing the application...'
             }
@@ -20,11 +25,7 @@ pipeline {
         stage('deploy') {
             steps {
                echo 'Deploying the application...' 
-               withCredentials([
-                   usernamePassword(credentials: "github-credentials-1", usernameVariable: USER, passwordVariable: PWD )
-                   ]){
-                   sh "some command ${USER} ${PWD}"
-               }
+               echo "Deploying version ${params.VERSION}"
             }
         }
     }

@@ -53,32 +53,57 @@
 
 pipeline {
     agent any
-    tools {
-        nodejs NodeJs
-    }
-    stages {
-        steps("build node"){
-            script {
-                echo "Building the application"
-                sh "npm run build"
-            }
-        }
 
-        steps("build image"){
-            script {
-                echo "Building the docker image"
-                withCredentials([usernamePassword(credentialsId: docker-hun-repo, passwordVariable: "PASS", usernameVariable: "USER")]) {
-                    sh "docker build -t abdulshafey24/my-node-app:1.2 ."
-                    sh "docker $PASS | login -u $USER --password-stdin"
-                    sh "docker push abdulshafey24/my-node-app:1.2"
+    tools {
+        nodejs 'NodeJS' // Ensure this matches the name of your Node.js installation in Jenkins
+    }
+
+    environment {
+        DOCKER_IMAGE = 'abdulshafey24/my-node-app:1.2'
+        DOCKERHUB_CREDENTIALS = 'docker-hub-repo' // Ensure this matches your DockerHub credentials ID in Jenkins
+    }
+
+    stages {
+        stage('Build Node') {
+            steps {
+                script {
+                    echo "Building the application"
+                    sh "npm run build"
                 }
             }
         }
 
-        steps("deploy"){
-            script {
-                echo "Deploying the application"
+        stage('Build Image') {
+            steps {
+                script {
+                    echo "Building the docker image"
+                    withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS, passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        sh "docker build -t ${DOCKER_IMAGE} ."
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                        sh "docker push ${DOCKER_IMAGE}"
+                    }
+                }
             }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    echo "Deploying the application"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }

@@ -57,14 +57,14 @@ pipeline {
         nodejs NodeJs
     }
     stages {
-        stage("build node"){
+        steps("build node"){
             script {
                 echo "Building the application"
                 sh "npm run build"
             }
         }
 
-        stage("build image"){
+        steps("build image"){
             script {
                 echo "Building the docker image"
                 withCredentials([usernamePassword(credentialsId: docker-hun-repo, passwordVariable: "PASS", usernameVariable: "USER")]) {
@@ -75,7 +75,7 @@ pipeline {
             }
         }
 
-        stage("deploy"){
+        steps("deploy"){
             script {
                 echo "Deploying the application"
             }
